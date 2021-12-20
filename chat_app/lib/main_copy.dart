@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:chat_app/api.dart';
 
-const bool ENABLE_WEBSOCKETS = true;
-
 void main() {
   /*WebSocketLink link = WebSocketLink(
     url: 'http://10.0.2.2:3000',
@@ -89,23 +87,23 @@ class _MyHomePageState extends State<MyHomePage> {
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
 
-    return Scaffold(
-        backgroundColor: Colors.grey[200],
-        appBar: AppBar(
-          title: const Text("Chats"),
-        ),
-        resizeToAvoidBottomInset: true,
-        body: GestureDetector(
-            onTap: () {
-              FocusScope.of(context).requestFocus(FocusNode());
-            },
-            child: Column(children: [
-              Subscription(getMessages, "", builder: ({
-                required bool loading,
-                dynamic payload,
-                dynamic error,
-              }) {
-                return error
+    return Subscription(getMessages, "", builder: ({
+      required bool loading,
+      dynamic payload,
+      dynamic error,
+    }) {
+      return Scaffold(
+          backgroundColor: Colors.grey[200],
+          appBar: AppBar(
+            title: const Text("Chats"),
+          ),
+          resizeToAvoidBottomInset: true,
+          body: GestureDetector(
+              onTap: () {
+                FocusScope.of(context).requestFocus(FocusNode());
+              },
+              child: Column(children: [
+                error
                     ? Text(error)
                     : loading
                         ? const CircularProgressIndicator()
@@ -160,69 +158,70 @@ class _MyHomePageState extends State<MyHomePage> {
                                                     : Colors.black),
                                           )))
                                 ]);
-                          });
-              }),
-              Mutation(
-                options:
-                    MutationOptions(documentNode: gql(createMessageMutation)),
-                builder: (runMutation, result) {
-                  return Expanded(
-                    child: Container(
-                      height: 100,
-                      decoration: const BoxDecoration(
-                        color: Colors.white,
-                        boxShadow: [
-                          BoxShadow(
-                            offset: Offset(0, -3),
-                            blurRadius: 6.0,
-                            color: Colors.black12,
-                          ),
-                        ],
-                      ),
-                      alignment: Alignment.topCenter,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 20.0, vertical: 12.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Expanded(
-                              child: _buildMessageInput(context),
+                          }),
+                Mutation(
+                  options:
+                      MutationOptions(documentNode: gql(createMessageMutation)),
+                  builder: (runMutation, result) {
+                    return Expanded(
+                      child: Container(
+                        height: 100,
+                        decoration: const BoxDecoration(
+                          color: Colors.white,
+                          boxShadow: [
+                            BoxShadow(
+                              offset: Offset(0, -3),
+                              blurRadius: 6.0,
+                              color: Colors.black12,
                             ),
-                            Padding(
-                              padding: const EdgeInsets.only(left: 12.0),
-                              child: Container(
-                                height: 45.0,
-                                width: 45.0,
-                                child: RawMaterialButton(
-                                    fillColor: Colors.green[200],
-                                    shape: const CircleBorder(),
-                                    elevation: 5.0,
-                                    child: const Icon(
-                                      Icons.send,
-                                      color: Colors.white,
-                                    ),
-                                    onPressed: () {
-                                      if (_textEditingController.text
-                                          .trim()
-                                          .isEmpty) return;
-                                      runMutation({
-                                        'user': firstName,
-                                        'content': _textEditingController.text,
-                                      });
-                                      _textEditingController.clear();
-                                    }),
-                              ),
-                            )
                           ],
                         ),
+                        alignment: Alignment.topCenter,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 20.0, vertical: 12.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Expanded(
+                                child: _buildMessageInput(context),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(left: 12.0),
+                                child: Container(
+                                  height: 45.0,
+                                  width: 45.0,
+                                  child: RawMaterialButton(
+                                      fillColor: Colors.green[200],
+                                      shape: const CircleBorder(),
+                                      elevation: 5.0,
+                                      child: const Icon(
+                                        Icons.send,
+                                        color: Colors.white,
+                                      ),
+                                      onPressed: () {
+                                        if (_textEditingController.text
+                                            .trim()
+                                            .isEmpty) return;
+                                        runMutation({
+                                          'user': firstName,
+                                          'content':
+                                              _textEditingController.text,
+                                        });
+                                        _textEditingController.clear();
+                                      }),
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
                       ),
-                    ),
-                  );
-                },
-              )
-            ])));
+                    );
+                  },
+                )
+              ])));
+    });
   }
 
   Future createAlertDialog(BuildContext context) {
